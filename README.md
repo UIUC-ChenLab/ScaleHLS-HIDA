@@ -6,7 +6,7 @@ By using the MLIR framework that can be better tuned to particular algorithms at
 
 Working with a set of neural networks modeled in PyTorch, ScaleHLS-generated hardware designs provide up to 3825x higher performances compared to the baseline designs that do not contain pragma directives and are only optimized by Xilinx Vivado HLS. Furthermore, HIDA (ScaleHLS 2.0) achieves an 8.54x higher throughput on average compared to that of ScaleHLS. Meanwhile, despite being fully automated and able to handle various applications, HIDA achieves a 1.29x higher throughput over [DNNBuilder](https://github.com/IBM/AccDNN),, a state-of-the-art RTL-based neural network accelerator on FPGAs.
 
-For more details, please see our [ScaleHLS (HPCA'22)](https://arxiv.org/abs/2107.11673) and [HIDA (ASPLOS'24)](https://doi.org/10.1145/3617232.3624850) paper:
+For more details, please see our [ScaleHLS (HPCA'22)](https://arxiv.org/abs/2107.11673) and [HIDA (ASPLOS'24)](https://arxiv.org/abs/2311.03379) paper:
 ```bibtex
 @inproceedings{ye2022scalehls,
   title={ScaleHLS: A New Scalable High-Level Synthesis Framework on Multi-Level Intermediate Representation},
