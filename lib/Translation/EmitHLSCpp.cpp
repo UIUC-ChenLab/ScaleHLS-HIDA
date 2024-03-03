@@ -1866,26 +1866,39 @@ void ModuleEmitter::emitFunctionDirectives(func::FuncOp func,
       // Axi ports are handled separately.
       if (port.getType().isa<AxiType>())
         continue;
-      // MemRefType and StreamType must have been converted to AXI ports for the
-      // top function.
-      if (port.getType().isa<MemRefType, StreamType>())
-        emitError(func, "unsupported port type");
 
-      // For scalar types, we always emit them as AXI-Lite ports.
-      auto name = getName(port);
-      if (name.front() == "*"[0])
-        name.erase(name.begin());
-      indent() << "#pragma HLS interface s_axilite port=" << name
-               << " bundle=ctrl\n";
+      // Handle normal memref or stream types.
+      if (port.getType().isa<MemRefType, StreamType>()) {
+        indent() << "#pragma HLS interface";
+
+        if (auto memrefPortType = port.getType().dyn_cast<MemRefType>()) {
+          if (getMemoryKind(memrefPortType) == MemoryKind::DRAM)
+            os << " m_axi offset=slave";
+          else
+            os << " bram";
+        } else
+          os << " axis";
+
+        os << " port=";
+        emitValue(port);
+        os << "\n";
+
+      } else {
+        // For scalar types, we always emit them as AXI-Lite ports.
+        auto name = getName(port);
+        if (name.front() == "*"[0])
+          name.erase(name.begin());
+        indent() << "#pragma HLS interface s_axilite port=" << name
+                 << " bundle=ctrl\n";
+      }
+
+      if (port.getType().isa<MemRefType>())
+        emitArrayDirectives(port, true);
     }
   }
 
   if (func->getAttr("inline"))
     indent() << "#pragma HLS inline\n";
-
-  for (auto &port : portList)
-    if (port.getType().isa<MemRefType>())
-      emitArrayDirectives(port, true);
 
   if (auto funcDirect = getFuncDirective(func)) {
     if (funcDirect.getPipeline()) {

@@ -48,7 +48,6 @@ void scalehls::registerScaleHLSDSEPipeline() {
         // Legalize the input program.
         pm.addPass(scalehls::createFuncPreprocessPass(opts.hlsTopFunc));
         pm.addPass(scalehls::createMaterializeReductionPass());
-        pm.addPass(bufferization::createBufferLoopHoistingPass());
 
         // Apply the automatic design space exploration to the top function.
         pm.addPass(scalehls::createDesignSpaceExplorePass(opts.dseTargetSpec));

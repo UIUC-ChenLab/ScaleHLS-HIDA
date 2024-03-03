@@ -76,7 +76,9 @@ bool scalehls::applyArrayPartition(Value array, ArrayRef<unsigned> factors,
   auto layoutAttr = PartitionLayoutAttr::getWithActualFactors(
       array.getContext(), kinds, SmallVector<int64_t>(factors),
       arrayType.getShape());
-  auto kindAttr = arrayType.getMemorySpace().cast<MemoryKindAttr>();
+  auto memorySpaceAttr = arrayType.getMemorySpace();
+  auto kindAttr =
+      memorySpaceAttr ? memorySpaceAttr.cast<MemoryKindAttr>() : nullptr;
   if (actualDepth < threshold)
     kindAttr = MemoryKindAttr::get(array.getContext(), MemoryKind::LUTRAM_2P);
   array.setType(MemRefType::get(

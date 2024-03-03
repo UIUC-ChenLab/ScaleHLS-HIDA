@@ -1101,12 +1101,10 @@ void AffineSelectOp::print(OpAsmPrinter &p) {
   p.printOperand(getTrueValue());
   p << ", ";
   p.printOperand(getFalseValue());
-  p << " : ";
-  p.printType(getType());
-
-  // Print the attribute list.
   p.printOptionalAttrDict((*this)->getAttrs(),
                           /*elidedAttrs=*/getConditionAttrStrName());
+  p << " : ";
+  p.printType(getType());
 }
 
 IntegerSet AffineSelectOp::getIntegerSet() {
