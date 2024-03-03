@@ -34,13 +34,13 @@ Optionally, the following packages are required for the Python binding.
 - pybind11
 - numpy
 
-### Clone ScaleHLS
+### Clone ScaleHLS-HIDA
 ```sh
-$ git clone --recursive git@github.com:UIUC-ChenLab/ScaleHLS-HIDA.git
-$ cd scalehls
+$ git clone --recursive git@github.com:UIUC-ChenLab/ScaleHLS-HIDA.git scalehls-hida
+$ cd scalehls-hida
 ```
 
-### Build ScaleHLS
+### Build ScaleHLS-HIDA
 Run the following script to build ScaleHLS. Optionally, add `-p ON` to enable the Python binding and `-j xx` to specify the number of parallel linking jobs.
 ```sh
 $ ./build-scalehls.sh
@@ -70,7 +70,7 @@ $ python3 resnet18.py > resnet18.mlir
 
 $ # Optimize the model and emit C++ code.
 $ scalehls-opt resnet18.mlir \
-    -scaleflow-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
+    -hida-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
     | scalehls-translate -scalehls-emit-hlscpp > resnet18.cpp
 ```
 

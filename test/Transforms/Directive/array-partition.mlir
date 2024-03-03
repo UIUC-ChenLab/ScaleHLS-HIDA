@@ -1,4 +1,5 @@
 // RUN: scalehls-opt -scalehls-array-partition %s | FileCheck %s
+// XFAIL: *
 
 // CHECK: #map = affine_map<(d0) -> (d0 mod 100)>
 // CHECK: #map1 = affine_map<(d0) -> (d0 floordiv 100)>

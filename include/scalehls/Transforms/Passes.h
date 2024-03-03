@@ -27,9 +27,9 @@ enum AffineFusionMode { Greedy, ProducerConsumer, Sibling };
 enum CreateSubviewMode { Point, Reduction };
 
 void registerScaleHLSDSEPipeline();
-void registerScaleFlowPyTorchPipeline();
-void registerScaleFlowPyTorchPipelinePost();
-void registerScaleFlowCppPipeline();
+void registerHIDAPyTorchPipeline();
+void registerHIDAPyTorchPipelinePost();
+void registerHIDACppPipeline();
 void registerTransformsPasses();
 
 void addCreateSubviewPasses(OpPassManager &pm,

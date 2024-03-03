@@ -72,8 +72,8 @@ void scalehls::addSimplifyAffineLoopPasses(OpPassManager &pm) {
 }
 
 namespace {
-struct ScaleFlowPyTorchPipelineOptions
-    : public PassPipelineOptions<ScaleFlowPyTorchPipelineOptions> {
+struct HIDAPyTorchPipelineOptions
+    : public PassPipelineOptions<HIDAPyTorchPipelineOptions> {
   Option<std::string> hlsTopFunc{
       *this, "top-func", llvm::cl::init("forward"),
       llvm::cl::desc("Specify the top function of the design")};
@@ -138,11 +138,11 @@ struct ScaleFlowPyTorchPipelineOptions
 };
 } // namespace
 
-void scalehls::registerScaleFlowPyTorchPipeline() {
-  PassPipelineRegistration<ScaleFlowPyTorchPipelineOptions>(
-      "scaleflow-pytorch-pipeline",
-      "Compile TOSA (from Torch-MLIR) to HLS C++ with ScaleFlow",
-      [](OpPassManager &pm, const ScaleFlowPyTorchPipelineOptions &opts) {
+void scalehls::registerHIDAPyTorchPipeline() {
+  PassPipelineRegistration<HIDAPyTorchPipelineOptions>(
+      "hida-pytorch-pipeline",
+      "Compile TOSA (from Torch-MLIR) to HLS C++ with HIDA",
+      [](OpPassManager &pm, const HIDAPyTorchPipelineOptions &opts) {
         if (opts.tosaInput) {
           // TOSA optimization.
           pm.addPass(scalehls::createTosaSimplifyGraphPass());
@@ -309,11 +309,11 @@ void scalehls::registerScaleFlowPyTorchPipeline() {
 }
 
 /// FIXME: Don't use! This is just for testing purpose.
-void scalehls::registerScaleFlowPyTorchPipelinePost() {
-  PassPipelineRegistration<ScaleFlowPyTorchPipelineOptions>(
-      "scaleflow-pytorch-pipeline-post",
-      "Compile TOSA (from Torch-MLIR) to HLS C++ with ScaleFlow",
-      [](OpPassManager &pm, const ScaleFlowPyTorchPipelineOptions &opts) {
+void scalehls::registerHIDAPyTorchPipelinePost() {
+  PassPipelineRegistration<HIDAPyTorchPipelineOptions>(
+      "hida-pytorch-pipeline-post",
+      "Compile TOSA (from Torch-MLIR) to HLS C++ with HIDA",
+      [](OpPassManager &pm, const HIDAPyTorchPipelineOptions &opts) {
         // Parallelize dataflow.
         if (opts.loopUnrollFactor) {
           pm.addPass(scalehls::createParallelizeDataflowNodePass(
@@ -354,10 +354,10 @@ void scalehls::registerScaleFlowPyTorchPipelinePost() {
       });
 }
 
-void scalehls::registerScaleFlowCppPipeline() {
-  PassPipelineRegistration<ScaleFlowPyTorchPipelineOptions>(
-      "scaleflow-cpp-pipeline", "Compile C++ to optimized C++",
-      [](OpPassManager &pm, const ScaleFlowPyTorchPipelineOptions &opts) {
+void scalehls::registerHIDACppPipeline() {
+  PassPipelineRegistration<HIDAPyTorchPipelineOptions>(
+      "hida-cpp-pipeline", "Compile C++ to optimized C++",
+      [](OpPassManager &pm, const HIDAPyTorchPipelineOptions &opts) {
         // // Affine loop dataflowing.
         // pm.addPass(scalehls::createCreateDataflowFromAffinePass());
         // pm.addPass(scalehls::createStreamDataflowTaskPass());
@@ -480,8 +480,8 @@ void scalehls::registerScaleFlowCppPipeline() {
 
 void scalehls::registerTransformsPasses() {
   registerScaleHLSDSEPipeline();
-  registerScaleFlowPyTorchPipeline();
-  registerScaleFlowPyTorchPipelinePost();
-  registerScaleFlowCppPipeline();
+  registerHIDAPyTorchPipeline();
+  registerHIDAPyTorchPipelinePost();
+  registerHIDACppPipeline();
   registerPasses();
 }
