@@ -160,6 +160,9 @@ getBufferIndexDepthsAndStrides(NodeOp node, Value buffer) {
                                         isLoopParallel(loop),
                                         getAverageTripCount(loop).value_or(1)));
     }
+    if (candidates.empty())
+      return {};
+
     // TODO: Better support buffer index to resolve multiple loop ivs.
     // For now, we just pick the loop iv of parallel loop with the largest loop
     // trip count.
