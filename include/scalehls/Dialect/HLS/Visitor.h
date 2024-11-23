@@ -68,7 +68,7 @@ public:
             arith::MaxUIOp, arith::MinUIOp,
 
             // Special expressions.
-            arith::SelectOp, arith::ConstantOp, arith::TruncIOp,
+            arith::SelectOp, arith::ConstantOp, arith::TruncIOp, arith::ExtFOp,
             arith::TruncFOp, arith::ExtUIOp, arith::ExtSIOp, arith::IndexCastOp,
             arith::UIToFPOp, arith::SIToFPOp, arith::FPToSIOp, arith::FPToUIOp>(
             [&](auto opNode) -> ResultType {
