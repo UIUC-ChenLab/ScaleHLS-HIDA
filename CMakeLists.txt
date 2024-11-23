@@ -52,12 +52,6 @@ set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/bin)
 set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/lib)
 set(MLIR_BINARY_DIR ${CMAKE_BINARY_DIR})
 
-set(LIT_ARGS_DEFAULT "-sv")
-if (MSVC_IDE OR XCODE)
-  set(LIT_ARGS_DEFAULT "${LIT_ARGS_DEFAULT} --no-progress-bar")
-endif()
-set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
-
 set(SCALEHLS_MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR} ) # --src-root
 set(SCALEHLS_MAIN_INCLUDE_DIR ${SCALEHLS_MAIN_SRC_DIR}/include)
 
@@ -82,16 +76,19 @@ add_definitions(${LLVM_DEFINITIONS})
 
 option(SCALEHLS_ENABLE_BINDINGS_PYTHON "Enables ScaleHLS Python bindings." OFF)
 
+# Python Bindings
 if(SCALEHLS_ENABLE_BINDINGS_PYTHON)
   message(STATUS "ScaleHLS Python bindings are enabled.")
 
-  include(MLIRDetectPythonEnv)
   find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
   message(STATUS "Found Python include dirs: ${Python3_INCLUDE_DIRS}")
   message(STATUS "Found Python libraries: ${Python3_LIBRARIES}")
   message(STATUS "Found Python executable: ${Python3_EXECUTABLE}")
-  message(STATUS "Found numpy v${Python3_NumPy_VERSION}: ${Python3_NumPy_INCLUDE_DIRS}")
+
+  include(MLIRDetectPythonEnv)
+  mlir_configure_python_dev_packages()
   include_directories(${Python3_NumPy_INCLUDE_DIRS})
+  message(STATUS "Found numpy v${Python3_NumPy_VERSION}: ${Python3_NumPy_INCLUDE_DIRS}")
 
   mlir_detect_pybind11_install()
   find_package(pybind11 2.6 CONFIG REQUIRED)
@@ -107,3 +104,34 @@ add_subdirectory(include/scalehls)
 add_subdirectory(lib)
 add_subdirectory(test)
 add_subdirectory(tools)
+
+# Lit
+set(LIT_ARGS_DEFAULT "-sv")
+if (MSVC_IDE OR XCODE)
+  set(LIT_ARGS_DEFAULT "${LIT_ARGS_DEFAULT} --no-progress-bar")
+endif()
+set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
+
+# Codes Format Plugin
+add_custom_target(
+  format
+  COMMAND find ${CMAKE_SOURCE_DIR} -name "*.cpp" -o -name "*.h" | xargs
+          clang-format -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Formatting all source files")
+add_custom_target(
+  format-cmake
+  COMMAND find ${CMAKE_SOURCE_DIR} -name 'CMakeLists.txt' -o -name '*.cmake' |
+          xargs cmake-format -i
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Formatting all CMake files")
+add_custom_target(
+  format-python
+  COMMAND black ${CMAKE_SOURCE_DIR}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Formatting all Python files")
+
+add_custom_target(
+  format-all
+  DEPENDS format format-cmake format-python
+  COMMENT "Formatting all files (C++, CMake, Python)")

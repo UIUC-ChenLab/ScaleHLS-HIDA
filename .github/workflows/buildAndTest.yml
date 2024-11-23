@@ -13,7 +13,7 @@ jobs:
       - name: Clang Format
         uses: DoozyX/clang-format-lint-action@v0.13
         with:
-          exclude: './polygeist ./samples ./test'
+          exclude: './polygeist ./test'
           clangFormatVersion: 11
           style: llvm
 
