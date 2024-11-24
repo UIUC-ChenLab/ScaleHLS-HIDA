@@ -21,4 +21,4 @@ MLIR_CAPI_EXPORTED MlirLogicalResult mlirEmitHlsCpp(MlirModule module,
 }
 #endif
 
-#endif // SCALEHLS_C_TRANSLATION_EMITHLSCPP_H
+#endif  // SCALEHLS_C_TRANSLATION_EMITHLSCPP_H

@@ -13,5 +13,5 @@ from mlir.dialects._ods_common import (
     extend_opview_class,
     get_default_loc_context,
     get_op_result_or_value,
-    get_op_results_or_values
+    get_op_results_or_values,
 )

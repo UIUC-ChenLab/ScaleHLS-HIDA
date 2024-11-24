@@ -201,7 +201,7 @@ public:
   float maxDistance;
 };
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_TRANSFORMS_EXPLORER_H
+#endif  // SCALEHLS_TRANSFORMS_EXPLORER_H

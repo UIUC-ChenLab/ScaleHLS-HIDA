@@ -49,7 +49,7 @@ inline void registerAllDialects(mlir::DialectRegistry &registry) {
   // clang-format on
 }
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_INITALLDIALECTS_H
+#endif  // SCALEHLS_INITALLDIALECTS_H

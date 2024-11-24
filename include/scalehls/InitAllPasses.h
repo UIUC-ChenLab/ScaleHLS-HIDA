@@ -19,7 +19,7 @@ inline void registerAllPasses() {
   mlir::registerAllPasses();
 }
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_INITALLPASSES_H
+#endif  // SCALEHLS_INITALLPASSES_H

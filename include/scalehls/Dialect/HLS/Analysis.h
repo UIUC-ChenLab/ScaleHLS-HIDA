@@ -46,37 +46,37 @@ public:
         targetToSourceMap(targetToSourceMap) {
     // Make sure the source-to-target and target-to-source map is valid.
     if (!sourceToTargetMap.empty()) {
-      assert(getNodeLoopBand(targetNode).size() == sourceToTargetMap.size() &&
-             "invalid source-to-target map size");
+      assert(getNodeLoopBand(targetNode).size() == sourceToTargetMap.size()
+             && "invalid source-to-target map size");
 
       for (auto i : llvm::enumerate(sourceToTargetMap))
-        if (i.value() >= 0 && i.value() < (int64_t)targetToSourceMap.size())
-          assert((int64_t)i.index() == targetToSourceMap[i.value()] &&
-                 "mismatched source-to-target map");
+        if (i.value() >= 0 && i.value() < (int64_t) targetToSourceMap.size())
+          assert((int64_t) i.index() == targetToSourceMap[i.value()]
+                 && "mismatched source-to-target map");
         else if (i.value() != -1)
           assert("invalid source-to-target map");
     }
 
     if (!targetToSourceMap.empty()) {
-      assert(getNodeLoopBand(sourceNode).size() == targetToSourceMap.size() &&
-             "invalid target-to-source map size");
+      assert(getNodeLoopBand(sourceNode).size() == targetToSourceMap.size()
+             && "invalid target-to-source map size");
 
       for (auto i : llvm::enumerate(targetToSourceMap))
-        if (i.value() >= 0 && i.value() < (int64_t)sourceToTargetMap.size())
-          assert((int64_t)i.index() == sourceToTargetMap[i.value()] &&
-                 "mismatched target-to-source map");
+        if (i.value() >= 0 && i.value() < (int64_t) sourceToTargetMap.size())
+          assert((int64_t) i.index() == sourceToTargetMap[i.value()]
+                 && "mismatched target-to-source map");
         else if (i.value() != -1)
           assert("invalid target-to-source map");
     }
 
-    assert(getNodeLoopBand(sourceNode).size() == sourceScaleFactors.size() &&
-           "invalid source strides size");
-    assert(getNodeLoopBand(targetNode).size() == targetScaleFactors.size() &&
-           "invalid target strides size");
+    assert(getNodeLoopBand(sourceNode).size() == sourceScaleFactors.size()
+           && "invalid source strides size");
+    assert(getNodeLoopBand(targetNode).size() == targetScaleFactors.size()
+           && "invalid target strides size");
 
-    assert(sharedBuffer.getMemrefType() == sourceBuffer.getType() &&
-           sharedBuffer.getMemrefType() == targetBuffer.getType() &&
-           "source or target argument type not align with buffer type");
+    assert(sharedBuffer.getMemrefType() == sourceBuffer.getType()
+           && sharedBuffer.getMemrefType() == targetBuffer.getType()
+           && "source or target argument type not align with buffer type");
   }
 
   /// Get the shared buffer.
@@ -84,8 +84,8 @@ public:
 
   /// Check whether a node is source node.
   bool isSourceNode(NodeOp currentNode) const {
-    assert(currentNode == sourceNode ||
-           currentNode == targetNode && "invalid input node");
+    assert(currentNode == sourceNode
+           || currentNode == targetNode && "invalid input node");
     return currentNode == sourceNode;
   }
 
@@ -112,8 +112,8 @@ public:
   // scaled factors is less than 1 and rounded to 1, return true.
   std::pair<FactorList, bool>
   permuteAndScaleFactors(NodeOp currentNode, const FactorList &factors) {
-    assert(factors.size() == getNodeLoopBand(currentNode).size() &&
-           "invalid permutation factors");
+    assert(factors.size() == getNodeLoopBand(currentNode).size()
+           && "invalid permutation factors");
     auto correlateMap = getCorrelateMap(currentNode);
     auto permutedFactors = permuteFactorsWithMap(factors, correlateMap);
 
@@ -127,8 +127,8 @@ public:
         scaledFactor = 1.0;
         roundedFlag = true;
       }
-      assert(scaledFactor == (unsigned)scaledFactor &&
-             "scaled factor is not integer");
+      assert(scaledFactor == (unsigned) scaledFactor
+             && "scaled factor is not integer");
       scaledFactors.push_back(scaledFactor);
     }
     return {scaledFactors, roundedFlag};
@@ -142,7 +142,7 @@ private:
                                    SmallVectorImpl<int64_t> &map) const {
     FactorList permutedFactors;
     for (auto i : map) {
-      if (i >= 0 && i < (int64_t)factors.size())
+      if (i >= 0 && i < (int64_t) factors.size())
         permutedFactors.push_back(factors[i]);
       else if (i == -1)
         permutedFactors.push_back(1);
@@ -182,7 +182,7 @@ private:
   llvm::SmallDenseMap<NodeOp, CorrelationList> nodeCorrelationMap;
 };
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_DIALECT_HLS_ANALYSIS_H
+#endif  // SCALEHLS_DIALECT_HLS_ANALYSIS_H

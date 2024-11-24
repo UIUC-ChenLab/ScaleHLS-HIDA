@@ -51,6 +51,9 @@ class YOLO(nn.Module):
         return x
 
 
-module = torch_mlir.compile(YOLO(), torch.ones(1, 3, 1280, 384),
-                            output_type=torch_mlir.OutputType.LINALG_ON_TENSORS)
+module = torch_mlir.compile(
+    YOLO(),
+    torch.ones(1, 3, 1280, 384),
+    output_type=torch_mlir.OutputType.LINALG_ON_TENSORS,
+)
 print(module)

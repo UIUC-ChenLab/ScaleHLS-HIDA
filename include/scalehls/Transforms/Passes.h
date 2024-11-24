@@ -7,16 +7,16 @@
 #ifndef SCALEHLS_TRANSFORMS_PASSES_H
 #define SCALEHLS_TRANSFORMS_PASSES_H
 
+#include <memory>
 #include "mlir/Pass/Pass.h"
 #include "scalehls/InitAllDialects.h"
-#include <memory>
 
 namespace mlir {
 class Pass;
 namespace func {
 class FuncOp;
-} // namespace func
-} // namespace mlir
+}  // namespace func
+}  // namespace mlir
 
 namespace mlir {
 namespace scalehls {
@@ -117,7 +117,7 @@ std::unique_ptr<Pass> createQoREstimationPass(std::string qorTargetSpec = "");
 #define GEN_PASS_CLASSES
 #include "scalehls/Transforms/Passes.h.inc"
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_TRANSFORMS_PASSES_H
+#endif  // SCALEHLS_TRANSFORMS_PASSES_H

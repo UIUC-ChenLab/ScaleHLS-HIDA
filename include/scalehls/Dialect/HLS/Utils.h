@@ -237,9 +237,9 @@ bool hasNoInterveningEffect(Operation *start, Operation *memOp, Value memref) {
         if (isa<EffectType>(effect.getEffect())) {
           // TODO: This should be replaced with a check for no aliasing.
           // Aliasing information should be passed to this method.
-          if (effect.getValue() && effect.getValue() != memref &&
-              isLocallyAllocated(memref) &&
-              isLocallyAllocated(effect.getValue()))
+          if (effect.getValue() && effect.getValue() != memref
+              && isLocallyAllocated(memref)
+              && isLocallyAllocated(effect.getValue()))
             continue;
           opMayHaveEffect = true;
           break;
@@ -251,8 +251,8 @@ bool hasNoInterveningEffect(Operation *start, Operation *memOp, Value memref) {
 
       // If the side effect comes from an affine read or write, try to prove the
       // side effecting `op` cannot reach `memOp`.
-      if (isa<AffineReadOpInterface, AffineWriteOpInterface>(op) &&
-          isa<AffineReadOpInterface, AffineWriteOpInterface>(memOp)) {
+      if (isa<AffineReadOpInterface, AffineWriteOpInterface>(op)
+          && isa<AffineReadOpInterface, AffineWriteOpInterface>(memOp)) {
         MemRefAccess srcAccess(op);
         MemRefAccess destAccess(memOp);
 
@@ -265,8 +265,8 @@ bool hasNoInterveningEffect(Operation *start, Operation *memOp, Value memref) {
         // Affine dependence analysis here is applicable only if both ops
         // operate on the same memref and if `op`, `memOp`, and `start` are in
         // the same AffineScope.
-        if (getAffineScope(op) == getAffineScope(memOp) &&
-            getAffineScope(op) == getAffineScope(start)) {
+        if (getAffineScope(op) == getAffineScope(memOp)
+            && getAffineScope(op) == getAffineScope(start)) {
           // Number of loops containing the start op and the ending operation.
           unsigned minSurroundingLoops =
               getNumCommonSurroundingLoops(*start, *memOp);
@@ -313,8 +313,7 @@ bool hasNoInterveningEffect(Operation *start, Operation *memOp, Value memref) {
       // operations may have the side effect `EffectType` on memOp.
       for (Region &region : op->getRegions())
         for (Block &block : region)
-          for (Operation &op : block)
-            checkOperation(&op);
+          for (Operation &op : block) checkOperation(&op);
       return;
     }
 
@@ -336,59 +335,59 @@ bool hasNoInterveningEffect(Operation *start, Operation *memOp, Value memref) {
 
   // Check for all paths from operation `from` to operation `untilOp` for the
   // given memory effect.
-  std::function<void(Operation *, Operation *)> recur =
-      [&](Operation *from, Operation *untilOp) {
-        assert(
-            from->getParentRegion()->isAncestor(untilOp->getParentRegion()) &&
-            "Checking for side effect between two operations without a common "
-            "ancestor");
+  std::function<void(Operation *, Operation *)> recur = [&](Operation *from,
+                                                            Operation
+                                                                *untilOp) {
+    assert(
+        from->getParentRegion()->isAncestor(untilOp->getParentRegion())
+        && "Checking for side effect between two operations without a common "
+           "ancestor");
 
-        // If the operations are in different regions, recursively consider all
-        // path from `from` to the parent of `to` and all paths from the parent
-        // of `to` to `to`.
-        if (from->getParentRegion() != untilOp->getParentRegion()) {
-          recur(from, untilOp->getParentOp());
-          until(untilOp->getParentOp(), untilOp);
-          return;
-        }
+    // If the operations are in different regions, recursively consider all
+    // path from `from` to the parent of `to` and all paths from the parent
+    // of `to` to `to`.
+    if (from->getParentRegion() != untilOp->getParentRegion()) {
+      recur(from, untilOp->getParentOp());
+      until(untilOp->getParentOp(), untilOp);
+      return;
+    }
 
-        // Now, assuming that `from` and `to` exist in the same region, perform
-        // a CFG traversal to check all the relevant operations.
+    // Now, assuming that `from` and `to` exist in the same region, perform
+    // a CFG traversal to check all the relevant operations.
 
-        // Additional blocks to consider.
-        SmallVector<Block *, 2> todoBlocks;
-        {
-          // First consider the parent block of `from` an check all operations
-          // after `from`.
-          for (auto iter = ++from->getIterator(), end = from->getBlock()->end();
-               iter != end && &*iter != untilOp; ++iter) {
-            checkOperation(&*iter);
-          }
+    // Additional blocks to consider.
+    SmallVector<Block *, 2> todoBlocks;
+    {
+      // First consider the parent block of `from` an check all operations
+      // after `from`.
+      for (auto iter = ++from->getIterator(), end = from->getBlock()->end();
+           iter != end && &*iter != untilOp; ++iter) {
+        checkOperation(&*iter);
+      }
 
-          // If the parent of `from` doesn't contain `to`, add the successors
-          // to the list of blocks to check.
-          if (untilOp->getBlock() != from->getBlock())
-            for (Block *succ : from->getBlock()->getSuccessors())
-              todoBlocks.push_back(succ);
-        }
+      // If the parent of `from` doesn't contain `to`, add the successors
+      // to the list of blocks to check.
+      if (untilOp->getBlock() != from->getBlock())
+        for (Block *succ : from->getBlock()->getSuccessors())
+          todoBlocks.push_back(succ);
+    }
 
-        llvm::SmallDenseSet<Block *, 4> done;
-        // Traverse the CFG until hitting `to`.
-        while (!todoBlocks.empty()) {
-          Block *blk = todoBlocks.pop_back_val();
-          if (done.count(blk))
-            continue;
-          done.insert(blk);
-          for (auto &op : *blk) {
-            if (&op == untilOp)
-              break;
-            checkOperation(&op);
-            if (&op == blk->getTerminator())
-              for (Block *succ : blk->getSuccessors())
-                todoBlocks.push_back(succ);
-          }
-        }
-      };
+    llvm::SmallDenseSet<Block *, 4> done;
+    // Traverse the CFG until hitting `to`.
+    while (!todoBlocks.empty()) {
+      Block *blk = todoBlocks.pop_back_val();
+      if (done.count(blk))
+        continue;
+      done.insert(blk);
+      for (auto &op : *blk) {
+        if (&op == untilOp)
+          break;
+        checkOperation(&op);
+        if (&op == blk->getTerminator())
+          for (Block *succ : blk->getSuccessors()) todoBlocks.push_back(succ);
+      }
+    }
+  };
 
   recur(start, memOp);
   return !hasSideEffect;
@@ -424,8 +423,8 @@ using ReverseOpIteratorsMap =
 using OpIteratorsMap =
     DenseMap<PtrLikeMemRefAccess, SmallVector<Operation **, 16>>;
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
 //===----------------------------------------------------------------------===//
 // Make PtrLikeMemRefAccess eligible as key of DenseMap
@@ -451,6 +450,6 @@ template <> struct DenseMapInfo<mlir::scalehls::PtrLikeMemRefAccess> {
   }
 };
 
-} // namespace llvm
+}  // namespace llvm
 
-#endif // SCALEHLS_SUPPORT_UTILS_H
+#endif  // SCALEHLS_SUPPORT_UTILS_H

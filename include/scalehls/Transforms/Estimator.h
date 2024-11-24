@@ -7,11 +7,11 @@
 #ifndef SCALEHLS_TRANSFORMS_ESTIMATOR_H
 #define SCALEHLS_TRANSFORMS_ESTIMATOR_H
 
+#include "llvm/Support/JSON.h"
 #include "mlir/Dialect/Affine/Analysis/AffineAnalysis.h"
 #include "mlir/IR/Dominance.h"
 #include "scalehls/Dialect/HLS/Visitor.h"
 #include "scalehls/Transforms/Utils.h"
-#include "llvm/Support/JSON.h"
 
 namespace mlir {
 namespace scalehls {
@@ -128,7 +128,7 @@ private:
   bool depAnalysis = true;
 };
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_TRANSFORMS_ESTIMATOR_H
+#endif  // SCALEHLS_TRANSFORMS_ESTIMATOR_H

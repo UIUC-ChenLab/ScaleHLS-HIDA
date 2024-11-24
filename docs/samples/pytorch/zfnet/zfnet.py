@@ -37,6 +37,9 @@ class ZF(nn.Module):
         return x
 
 
-module = torch_mlir.compile(ZF(), torch.ones(1, 3, 224, 224),
-                            output_type=torch_mlir.OutputType.LINALG_ON_TENSORS)
+module = torch_mlir.compile(
+    ZF(),
+    torch.ones(1, 3, 224, 224),
+    output_type=torch_mlir.OutputType.LINALG_ON_TENSORS,
+)
 print(module)

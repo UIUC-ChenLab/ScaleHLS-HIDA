@@ -11,7 +11,9 @@ import torch.nn as nn
 from torch import Tensor
 
 
-def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
+def conv3x3(
+    in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1
+) -> nn.Conv2d:
     """3x3 convolution with padding"""
     return nn.Conv2d(
         in_planes,
@@ -48,11 +50,9 @@ class BasicBlock(nn.Module):
         # if norm_layer is None:
         #     norm_layer = nn.BatchNorm2d
         if groups != 1 or base_width != 64:
-            raise ValueError(
-                "BasicBlock only supports groups=1 and base_width=64")
+            raise ValueError("BasicBlock only supports groups=1 and base_width=64")
         if dilation > 1:
-            raise NotImplementedError(
-                "Dilation > 1 not supported in BasicBlock")
+            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         # self.bn1 = norm_layer(planes)
@@ -170,25 +170,28 @@ class ResNet(nn.Module):
         self.groups = groups
         self.base_width = width_per_group
         self.conv1 = nn.Conv2d(
-            3, self.inplanes, kernel_size=7, stride=1, padding=3, bias=False)
+            3, self.inplanes, kernel_size=7, stride=1, padding=3, bias=False
+        )
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
         # self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(
-            block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+            block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0]
+        )
         self.layer3 = self._make_layer(
-            block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+            block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1]
+        )
         self.layer4 = self._make_layer(
-            block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
+            block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2]
+        )
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(
-                    m.weight, mode="fan_out", nonlinearity="relu")
+                nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu")
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -228,7 +231,13 @@ class ResNet(nn.Module):
         layers = []
         layers.append(
             block(
-                self.inplanes, planes, stride, downsample, self.groups, self.base_width, previous_dilation
+                self.inplanes,
+                planes,
+                stride,
+                downsample,
+                self.groups,
+                self.base_width,
+                previous_dilation,
             )
         )
         self.inplanes = planes * block.expansion
@@ -277,8 +286,7 @@ def _resnet(
     **kwargs: Any,
 ) -> ResNet:
     if weights is not None:
-        _ovewrite_named_param(kwargs, "num_classes",
-                              len(weights.meta["categories"]))
+        _ovewrite_named_param(kwargs, "num_classes", len(weights.meta["categories"]))
 
     model = ResNet(block, layers, **kwargs)
 
@@ -311,8 +319,11 @@ def resnet18(*, weights=None, progress: bool = True, **kwargs: Any) -> ResNet:
 resnet18 = resnet18()
 resnet18.train(False)
 
-module = torch_mlir.compile(resnet18, torch.ones(
-    1, 3, 224, 224), output_type=torch_mlir.OutputType.LINALG_ON_TENSORS)
+module = torch_mlir.compile(
+    resnet18,
+    torch.ones(1, 3, 224, 224),
+    output_type=torch_mlir.OutputType.LINALG_ON_TENSORS,
+)
 print(module)
 
 # traced_script_module = torch.jit.trace(resnet18, torch.ones(1, 3, 224, 224))

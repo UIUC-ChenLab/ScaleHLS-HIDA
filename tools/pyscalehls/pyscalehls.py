@@ -17,27 +17,29 @@ def do_run(command):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='pyscalehls')
-    parser.add_argument('input',
-                        metavar="input",
-                        help='HLS C/C++ input file')
-    parser.add_argument('-o', dest='output',
-                        metavar="output",
-                        help='HLS C++ output file')
-    parser.add_argument('-f', dest='function',
-                        metavar="function",
-                        required=True,
-                        help='Top function')
+    parser = argparse.ArgumentParser(prog="pyscalehls")
+    parser.add_argument("input", metavar="input", help="HLS C/C++ input file")
+    parser.add_argument(
+        "-o", dest="output", metavar="output", help="HLS C++ output file"
+    )
+    parser.add_argument(
+        "-f", dest="function", metavar="function", required=True, help="Top function"
+    )
 
     # Parse command line arguments.
     opts = parser.parse_args()
 
     # Call `cgeist` to parse HLS C/C++ into MLIR.
-    fin = do_run(['cgeist', '-S',
-                  '-function=' + opts.function,
-                  '-memref-fullrank',
-                  '-raise-scf-to-affine',
-                  opts.input])
+    fin = do_run(
+        [
+            "cgeist",
+            "-S",
+            "-function=" + opts.function,
+            "-memref-fullrank",
+            "-raise-scf-to-affine",
+            opts.input,
+        ]
+    )
 
     # Parse MLIR into memory.
     ctx = mlir.ir.Context()
@@ -103,12 +105,12 @@ def main():
     scalehls.emit_hlscpp(mod, buf)
     buf.seek(0)
     if opts.output:
-        fout = open(opts.output, 'w+')
+        fout = open(opts.output, "w+")
         shutil.copyfileobj(buf, fout)
         fout.close()
     else:
         print(buf.read())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

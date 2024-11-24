@@ -7,8 +7,8 @@
 #ifndef SCALEHLS_DIALECT_HLS_VISITOR_H
 #define SCALEHLS_DIALECT_HLS_VISITOR_H
 
-#include "scalehls/InitAllDialects.h"
 #include "llvm/ADT/TypeSwitch.h"
+#include "scalehls/InitAllDialects.h"
 
 namespace mlir {
 namespace scalehls {
@@ -213,7 +213,7 @@ public:
   HANDLE(arith::FPToSIOp);
 #undef HANDLE
 };
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_DIALECT_HLS_VISITOR_H
+#endif  // SCALEHLS_DIALECT_HLS_VISITOR_H

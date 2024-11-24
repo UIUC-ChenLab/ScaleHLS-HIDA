@@ -37,7 +37,7 @@ namespace StreamEffects {
 struct Instantiate : public MemoryEffects::Effect::Base<Instantiate> {};
 struct Push : public MemoryEffects::Effect::Base<Push> {};
 struct Pop : public MemoryEffects::Effect::Base<Pop> {};
-} // namespace StreamEffects
+}  // namespace StreamEffects
 
 //===----------------------------------------------------------------------===//
 // Tile layout attribute utils.
@@ -106,9 +106,9 @@ void setRuntimeAttr(Operation *op);
 
 class NodeOp;
 
-} // namespace hls
-} // namespace scalehls
-} // namespace mlir
+}  // namespace hls
+}  // namespace scalehls
+}  // namespace mlir
 
 namespace mlir {
 namespace OpTrait {
@@ -119,17 +119,17 @@ template <typename ConcreteType>
 class DataflowBufferLike : public TraitBase<ConcreteType, DataflowBufferLike> {
 public:
   static LogicalResult verifyTrait(Operation *op) {
-    if (op->getNumResults() != 1 ||
-        !op->getResult(0).getType().isa<StreamType, MemRefType>())
+    if (op->getNumResults() != 1
+        || !op->getResult(0).getType().isa<StreamType, MemRefType>())
       return failure();
     return success();
   }
 };
 
-} // namespace OpTrait
-} // namespace mlir
+}  // namespace OpTrait
+}  // namespace mlir
 
 #define GET_OP_CLASSES
 #include "scalehls/Dialect/HLS/HLSOps.h.inc"
 
-#endif // SCALEHLS_DIALECT_HLS_HLS_H
+#endif  // SCALEHLS_DIALECT_HLS_HLS_H

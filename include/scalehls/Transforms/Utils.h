@@ -72,7 +72,7 @@ bool applyOptStrategy(AffineLoopBand &band, func::FuncOp func,
 bool applyOptStrategy(func::FuncOp func, ArrayRef<FactorList> tileLists,
                       ArrayRef<unsigned> targetIIs);
 
-} // namespace scalehls
-} // namespace mlir
+}  // namespace scalehls
+}  // namespace mlir
 
-#endif // SCALEHLS_TRANSFORMS_UTILS_H
+#endif  // SCALEHLS_TRANSFORMS_UTILS_H

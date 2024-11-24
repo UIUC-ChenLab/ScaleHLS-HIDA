@@ -243,8 +243,8 @@ template <> struct type_caster<MlirValue> {
   }
 };
 
-} // namespace detail
-} // namespace pybind11
+}  // namespace detail
+}  // namespace pybind11
 
 namespace mlir {
 namespace python {
@@ -266,7 +266,7 @@ public:
   pure_subclass(py::handle scope, const char *derivedClassName,
                 py::object superClass) {
     py::object pyType =
-        py::reinterpret_borrow<py::object>((PyObject *)&PyType_Type);
+        py::reinterpret_borrow<py::object>((PyObject *) &PyType_Type);
     py::object metaclass = pyType(superClass);
     py::dict attributes;
 
@@ -291,7 +291,7 @@ public:
         std::forward<Func>(f), py::name(name), py::is_method(py::none()),
         py::sibling(py::getattr(thisClass, name, py::none())), extra...);
     auto builtinProperty =
-        py::reinterpret_borrow<py::object>((PyObject *)&PyProperty_Type);
+        py::reinterpret_borrow<py::object>((PyObject *) &PyProperty_Type);
     thisClass.attr(name) = builtinProperty(cf);
     return *this;
   }
@@ -338,9 +338,9 @@ public:
   mlir_attribute_subclass(py::handle scope, const char *attrClassName,
                           IsAFunctionTy isaFunction)
       : mlir_attribute_subclass(
-            scope, attrClassName, isaFunction,
-            py::module::import(MAKE_MLIR_PYTHON_QUALNAME("ir"))
-                .attr("Attribute")) {}
+          scope, attrClassName, isaFunction,
+          py::module::import(MAKE_MLIR_PYTHON_QUALNAME("ir"))
+              .attr("Attribute")) {}
 
   /// Subclasses with a provided mlir.ir.Attribute super-class. This must
   /// be used if the subclass is being defined in the same extension module
@@ -354,7 +354,7 @@ public:
     // different cpp_function and other requirements on chaining to super
     // __init__ make it more awkward to do generally).
     std::string captureTypeName(
-        typeClassName); // As string in case if typeClassName is not static.
+        typeClassName);  // As string in case if typeClassName is not static.
     py::cpp_function initCf(
         [superClass, isaFunction, captureTypeName](py::object self,
                                                    py::object otherType) {
@@ -362,8 +362,8 @@ public:
           if (!isaFunction(rawAttribute)) {
             auto origRepr = py::repr(otherType).cast<std::string>();
             throw std::invalid_argument(
-                (llvm::Twine("Cannot cast attribute to ") + captureTypeName +
-                 " (from " + origRepr + ")")
+                (llvm::Twine("Cannot cast attribute to ") + captureTypeName
+                 + " (from " + origRepr + ")")
                     .str());
           }
           superClass.attr("__init__")(self, otherType);
@@ -390,8 +390,8 @@ public:
   mlir_type_subclass(py::handle scope, const char *typeClassName,
                      IsAFunctionTy isaFunction)
       : mlir_type_subclass(
-            scope, typeClassName, isaFunction,
-            py::module::import(MAKE_MLIR_PYTHON_QUALNAME("ir")).attr("Type")) {}
+          scope, typeClassName, isaFunction,
+          py::module::import(MAKE_MLIR_PYTHON_QUALNAME("ir")).attr("Type")) {}
 
   /// Subclasses with a provided mlir.ir.Type super-class. This must
   /// be used if the subclass is being defined in the same extension module
@@ -405,16 +405,16 @@ public:
     // different cpp_function and other requirements on chaining to super
     // __init__ make it more awkward to do generally).
     std::string captureTypeName(
-        typeClassName); // As string in case if typeClassName is not static.
+        typeClassName);  // As string in case if typeClassName is not static.
     py::cpp_function initCf(
         [superClass, isaFunction, captureTypeName](py::object self,
                                                    py::object otherType) {
           MlirType rawType = py::cast<MlirType>(otherType);
           if (!isaFunction(rawType)) {
             auto origRepr = py::repr(otherType).cast<std::string>();
-            throw std::invalid_argument((llvm::Twine("Cannot cast type to ") +
-                                         captureTypeName + " (from " +
-                                         origRepr + ")")
+            throw std::invalid_argument((llvm::Twine("Cannot cast type to ")
+                                         + captureTypeName + " (from "
+                                         + origRepr + ")")
                                             .str());
           }
           superClass.attr("__init__")(self, otherType);
@@ -431,8 +431,8 @@ public:
   }
 };
 
-} // namespace adaptors
-} // namespace python
-} // namespace mlir
+}  // namespace adaptors
+}  // namespace python
+}  // namespace mlir
 
-#endif // MLIR_BINDINGS_PYTHON_PYBIND_ADAPTORS_H
+#endif  // MLIR_BINDINGS_PYTHON_PYBIND_ADAPTORS_H
