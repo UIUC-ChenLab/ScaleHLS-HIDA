@@ -59,7 +59,7 @@ $ scalehls-opt resnet18.mlir \
 ## Repository Layout
 The project follows the conventions of typical MLIR-based projects:
 - `include/scalehls` and `lib` for C++ MLIR dialects/passes.
-- `polygeist` for the C/C++ front-end.
+- `docs/polygeist` for the C/C++ front-end.
 - `samples` for C/C++ and PyTorch examples.
 - `test` for holding regression tests.
 - `tools` for command line tools.
