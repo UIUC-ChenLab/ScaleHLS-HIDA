@@ -115,20 +115,21 @@ set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
 # Codes Format Plugin
 add_custom_target(
   format
-  COMMAND find ${CMAKE_SOURCE_DIR} -name "*.cpp" -o -name "*.h" | xargs
-          clang-format -i
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Formatting all source files")
+  COMMAND find ./ -path "./polygeist" -prune -o -path "./build" -prune -o
+          -name "*.cpp" -o -name "*.h" -print | xargs clang-format -i
+  WORKING_DIRECTORY ${SCALEHLS_MAIN_SRC_DIR}
+  COMMENT "Formatting all C++ source files")
 add_custom_target(
   format-cmake
-  COMMAND find ${CMAKE_SOURCE_DIR} -name 'CMakeLists.txt' -o -name '*.cmake' |
-          xargs cmake-format -i
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND find ./ -path "./polygeist" -prune -o -path "./build" -prune -o
+          -name "CMakeLists.txt" -o -name "*.cmake" -print | xargs cmake-format -i
+  WORKING_DIRECTORY ${SCALEHLS_MAIN_SRC_DIR}
   COMMENT "Formatting all CMake files")
 add_custom_target(
   format-python
-  COMMAND black ${CMAKE_SOURCE_DIR}
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND find ./ -path "./polygeist" -prune -o -path "./build" -prune -o
+          -name "*.py" -print | xargs black
+  WORKING_DIRECTORY ${SCALEHLS_MAIN_SRC_DIR}
   COMMENT "Formatting all Python files")
 
 add_custom_target(

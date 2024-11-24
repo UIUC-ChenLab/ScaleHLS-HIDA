@@ -1,1 +1,60 @@
+# .clang-format
+# Reference : https://www.cnblogs.com/oloroso/p/14699855.html
+
 BasedOnStyle: LLVM
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+# Align trailing comments on consecutive lines
+AlignTrailingComments: true
+# Allow all arguments on the next line if the function call or initializer list doesn't fit on one line
+AllowAllArgumentsOnNextLine: true
+# Allow constructor initializers on the next line
+AllowAllConstructorInitializersOnNextLine: true
+# Allow all parameters of a function declaration on the next line
+AllowAllParametersOfDeclarationOnNextLine: true
+# Allow short blocks on a single line (Always to always merge short blocks, Empty to merge only empty blocks)
+AllowShortBlocksOnASingleLine: Empty
+# Allow short case labels on a single line
+AllowShortCaseLabelsOnASingleLine: true
+# Allow short functions on a single line: None, InlineOnly (defined inside a class), Empty (empty functions), Inline (defined inside a class and empty), All
+AllowShortFunctionsOnASingleLine: Inline
+# Allow short if-statements on a single line
+AllowShortIfStatementsOnASingleLine: false
+# Allow short loops on a single line
+AllowShortLoopsOnASingleLine: true
+# Break before braces: Attach (always attach braces to surrounding context), Custom, Allman, etc.
+BreakBeforeBraces: Attach
+# Break before binary operators: None (break after operator),
+# NonAssignment (break before non-assignment operators), All (break before all operators)
+BreakBeforeBinaryOperators: NonAssignment
+# Maximum line length, 0 means no limit
+ColumnLimit: 80
+# Remove space inside braces for C++11 list initialization
+Cpp11BracedListStyle: true
+# Add space before parentheses: Never, ControlStatements, Always
+SpaceBeforeParens: ControlStatements
+# Number of spaces before trailing comments (for // comments)
+SpacesBeforeTrailingComments: 2
+# Add space after C-style cast
+SpaceAfterCStyleCast: true
+# Add space after the template keyword
+SpaceAfterTemplateKeyword: true
+# Add space inside parentheses
+SpacesInParentheses: false
+# Add space inside parentheses in C-style casts
+SpacesInCStyleCastParentheses: false
+# Allow sorting #include statements
+SortIncludes: true
+# Categories for sorting #include statements
+IncludeCategories:
+  - Regex: '^(<)'
+    Priority: 1
+  - Regex: '^"(llvm|llvm-c|clang|clang-c|mlir|mlir-c)/'
+    Priority: 2
+  - Regex: '^"(scalehls|scalehls-c)/'
+    Priority: 3
+  - Regex: '.*'
+    Priority: 4
+# Maximum number of consecutive empty lines to keep
+MaxEmptyLinesToKeep: 10
