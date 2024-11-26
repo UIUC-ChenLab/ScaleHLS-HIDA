@@ -15,8 +15,8 @@ config.lit_tools_dir = "@LLVM_LIT_TOOLS_DIR@"
 config.python_executable = "@Python3_EXECUTABLE@"
 config.gold_executable = "@GOLD_EXECUTABLE@"
 config.ld64_executable = "@LD64_EXECUTABLE@"
-config.enable_shared = "@ENABLE_SHARED@"
-config.enable_assertions = "@ENABLE_ASSERTIONS@"
+config.enable_shared = @ENABLE_SHARED@
+config.enable_assertions = @ENABLE_ASSERTIONS@
 config.targets_to_build = "@TARGETS_TO_BUILD@"
 config.native_target = "@LLVM_NATIVE_ARCH@"
 config.llvm_bindings = "@LLVM_BINDINGS@".split(' ')
@@ -35,7 +35,7 @@ config.scalehls_src_root = "@SCALEHLS_SOURCE_DIR@"
 config.scalehls_obj_root = "@SCALEHLS_BINARY_DIR@"
 config.scalehls_tools_dir = "@SCALEHLS_TOOLS_DIR@"
 config.scalehls_python_packages_dir = "@SCALEHLS_PYTHON_PACKAGES_DIR@"
-config.enable_bindings_python = "@SCALEHLS_ENABLE_BINDINGS_PYTHON@"
+config.enable_bindings_python = @SCALEHLS_ENABLE_BINDINGS_PYTHON@
 config.polygeist_tools_dir = "@POLYGEIST_TOOLS_DIR@"
 
 # Support substitution of the tools_dir with user parameters. This is
