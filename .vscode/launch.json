@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/scalehls-translate",
-            "args": ["-scalehls-emit-hlscpp", "ppcg.mlir", "-debug-only", "scalehls-emit-hlscpp"],
+            "args": ["-scalehls-emit-hlscpp", "ppcg_amp.mlir", "-debug-only", "scalehls-emit-hlscpp"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/.samples/polybench/correlation",
             "environment": [],

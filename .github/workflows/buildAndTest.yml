@@ -22,7 +22,6 @@ jobs:
           key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
 
       - name: Rebuild LLVM
-        if: steps.cache-llvm.outputs.cache-hit != 'true'
         run: |
           mkdir -p polygeist/llvm-project/build
           cd polygeist/llvm-project/build
@@ -32,7 +31,9 @@ jobs:
             -DCMAKE_BUILD_TYPE=RELEASE \
             -DLLVM_USE_LINKER=lld \
             -DCMAKE_C_COMPILER=clang \
-            -DCMAKE_CXX_COMPILER=clang++
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DLLVM_EXTERNAL_PROJECTS="polygeist" \
+            -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=../../ \
           cmake --build . -j $(nproc)
 
       - name: Build and Test ScaleHLS

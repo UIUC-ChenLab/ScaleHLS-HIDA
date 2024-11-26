@@ -1739,7 +1739,7 @@ void ModuleEmitter::emitPartialStaticArrayDecl(Value array, ArrayRef<int64_t> sh
   SmallString<8> baseNameWithPtr;
   baseNameWithPtr += "*";
   baseNameWithPtr += baseName;
-  for (int i = 0; i < shape.size(); ++i) {
+  for (size_t i = 0; i < shape.size(); ++i) {
     if (shape[i] == ShapedType::kDynamicSize) {
       if (i == 0) {
         fullDecl = "(" + std::string(baseNameWithPtr) + ")" + fullDecl;
@@ -1762,7 +1762,7 @@ void ModuleEmitter::emitDynamicArrayDecl(Value array, ArrayRef<int64_t> shape, T
   baseNameWithPtr += baseName;
 
   std::string fullDecl = std::string(baseNameWithPtr);
-  for (int i = 1; i < shape.size(); ++i) {
+  for (size_t i = 1; i < shape.size(); ++i) {
     fullDecl = "*" + fullDecl;
   }
 
