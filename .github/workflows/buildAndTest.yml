@@ -26,7 +26,7 @@ jobs:
           mkdir -p polygeist/llvm-project/build
           cd polygeist/llvm-project/build
           cmake ../llvm \
-            -DLLVM_ENABLE_PROJECTS="mlir" \
+            -DLLVM_ENABLE_PROJECTS="clang;mlir" \
             -DLLVM_TARGETS_TO_BUILD="host" \
             -DCMAKE_BUILD_TYPE=RELEASE \
             -DLLVM_USE_LINKER=lld \
@@ -34,7 +34,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++ \
             -DLLVM_EXTERNAL_PROJECTS="polygeist" \
             -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=../../
-          cmake --build . 
+          cmake --build . --target check-cgeist -j $(nproc)
 
       - name: Build and Test ScaleHLS
         run: |
