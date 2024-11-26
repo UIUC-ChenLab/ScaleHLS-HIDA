@@ -22,6 +22,7 @@ jobs:
           key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
 
       - name: Rebuild LLVM
+        if: steps.cache-llvm.outputs.cache-hit != 'true'
         run: |
           mkdir -p polygeist/llvm-project/build
           cd polygeist/llvm-project/build
