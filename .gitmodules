@@ -1,3 +1,7 @@
 [submodule "polygeist"]
 	path = polygeist
 	url = git@github.com:hanchenye/Polygeist.git
+[submodule "polybench-HLS"]
+	path = polybench-HLS
+	url = git@github.com:sheenisme/polybench_benchmark.git
+	branch = hlsTest
