@@ -360,6 +360,10 @@ private:
   void emitValue(Value val, unsigned rank = 0, bool isPtr = false,
                  bool isRef = false);
   void emitArrayDecl(Value array);
+  void emitPartialStaticArrayDecl(Value array, ArrayRef<int64_t> shape,
+                                  Type elementType);
+  void emitDynamicArrayDecl(Value array, ArrayRef<int64_t> shape,
+                            Type elementType);
   unsigned emitNestedLoopHeader(Value val);
   void emitNestedLoopFooter(unsigned rank);
   void emitInfoAndNewLine(Operation *op);
@@ -929,6 +933,21 @@ void ModuleEmitter::emitScfFor(scf::ForOp op) {
   addIndent();
 
   emitLoopDirectives(op);
+
+  // Handle iter_args if present.
+  if (!op.getIterOperands().empty()) {
+    for (unsigned i = 0; i < op.getIterOperands().size(); ++i) {
+      auto iterOperand = op.getIterOperands()[i];
+      auto iterResult = op.getRegionIterArgs()[i];
+      indent();
+      emitValue(iterResult);
+      os << " = ";
+      emitValue(iterOperand);
+      os << ";";
+      emitInfoAndNewLine(op);
+    }
+  }
+
   emitBlock(*op.getBody());
   reduceIndent();
 
@@ -1690,12 +1709,64 @@ void ModuleEmitter::emitArrayDecl(Value array) {
   assert(!isDeclared(array) && "has been declared before.");
   auto arrayType = peelAxiType(array.getType()).dyn_cast<MemRefType>();
 
-  if (arrayType.hasStaticShape()) {
+  if (!arrayType) {
+    return;
+  }
+
+  auto shape = arrayType.getShape();
+  bool hasDynamic = llvm::any_of(shape, [](int64_t dim) { return dim == ShapedType::kDynamicSize; });
+  bool allDynamic = llvm::all_of(shape, [](int64_t dim) { return dim == ShapedType::kDynamicSize; });
+
+  if (!hasDynamic) {
+    // Fully static shape handling logic
     emitValue(array);
     for (auto &shape : arrayType.getShape())
       os << "[" << shape << "]";
-  } else
-    emitValue(array, /*rank=*/0, /*isPtr=*/true);
+  } else if (allDynamic) {
+    // Fully dynamic shape handling logic
+    emitDynamicArrayDecl(array, shape, arrayType.getElementType());
+  } else {
+    // Partially static shape handling logic
+    emitPartialStaticArrayDecl(array, shape, arrayType.getElementType());
+  }
+}
+
+void ModuleEmitter::emitPartialStaticArrayDecl(Value array, ArrayRef<int64_t> shape, Type elementType) {
+  // Handle partially static array shapes
+  std::string baseDecl = getDataTypeName(elementType);
+  std::string fullDecl;
+  SmallString<8> baseName = addName(array);
+  SmallString<8> baseNameWithPtr;
+  baseNameWithPtr += "*";
+  baseNameWithPtr += baseName;
+  for (int i = 0; i < shape.size(); ++i) {
+    if (shape[i] == ShapedType::kDynamicSize) {
+      if (i == 0) {
+        fullDecl = "(" + std::string(baseNameWithPtr) + ")" + fullDecl;
+      } else {
+        assert("we only support 0 dimension is dynamic, others must be static size.");
+      }
+    } else {
+      fullDecl = fullDecl + "[" + std::to_string(shape[i]) + "]";
+    }
+  }
+  os << baseDecl << " " << fullDecl;
+}
+
+void ModuleEmitter::emitDynamicArrayDecl(Value array, ArrayRef<int64_t> shape, Type elementType) {
+  // Handle fully dynamic array shapes
+  std::string baseDecl = getDataTypeName(elementType);
+  SmallString<8> baseName = addName(array);
+  SmallString<8> baseNameWithPtr;
+  baseNameWithPtr += "*";
+  baseNameWithPtr += baseName;
+
+  std::string fullDecl = std::string(baseNameWithPtr);
+  for (int i = 1; i < shape.size(); ++i) {
+    fullDecl = "*" + fullDecl;
+  }
+
+  os << baseDecl << " " << fullDecl;
 }
 
 unsigned ModuleEmitter::emitNestedLoopHeader(Value val) {
