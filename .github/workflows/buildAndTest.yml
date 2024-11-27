@@ -5,23 +5,33 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
+      - name: Determine if rebuild is required
+        id: determine-rebuild
+        run: |
+          if git log -1 --pretty=%B | grep -q "rebuild llvm"; then
+            echo "force_rebuild=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Get ScaleHLS
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Get LLVM Hash
         id: get-llvm-hash
-        run: echo "::set-output name=hash::$(git -C ./polygeist rev-parse @:./llvm-project)"
+        run: echo "hash::$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
 
       - name: Cache LLVM
+        if: steps.determine-rebuild.outputs.force_rebuild == 'false'
         id: cache-llvm
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: polygeist/llvm-project/build
           key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
 
       - name: Rebuild LLVM
+        if: steps.determine-rebuild.outputs.force_rebuild == 'true' || steps.cache-llvm.outputs.cache-hit != 'true'
+        id: rebuild-llvm
         run: |
           mkdir -p polygeist/llvm-project/build
           cd polygeist/llvm-project/build
@@ -35,6 +45,15 @@ jobs:
             -DLLVM_EXTERNAL_PROJECTS="polygeist" \
             -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=../../
           cmake --build . -j $(nproc)
+      
+      - name: Update Cache LLVM
+        if: steps.rebuild-llvm.outcome == 'success'
+        id: update-cache-llvm
+        uses: actions/cache/restore@v4
+        with:
+          path: polygeist/llvm-project/build
+          key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
+
 
       - name: Build and Test ScaleHLS
         run: |
