@@ -5,13 +5,6 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Determine if rebuild is required
-        id: determine-rebuild
-        run: |
-          if git log -1 --pretty=%B | grep -q "rebuild llvm"; then
-            echo "force_rebuild=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: Get ScaleHLS
         uses: actions/checkout@v4
         with:
@@ -19,7 +12,14 @@ jobs:
 
       - name: Get LLVM Hash
         id: get-llvm-hash
-        run: echo "hash::$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
+        run: echo "name=hash::$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
+
+      - name: Determine if rebuild is required
+        id: determine-rebuild
+        run: |
+          if git log -1 --pretty=%B | grep -q "rebuild llvm"; then
+            echo "force_rebuild=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Cache LLVM
         if: steps.determine-rebuild.outputs.force_rebuild == 'false'
