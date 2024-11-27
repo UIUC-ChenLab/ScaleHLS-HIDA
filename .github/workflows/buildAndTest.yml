@@ -12,7 +12,7 @@ jobs:
 
       - name: Get LLVM Hash
         id: get-llvm-hash
-        run: echo "name=hash::$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
+        run: echo "hash=$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
 
       - name: Determine if rebuild is required
         id: determine-rebuild
