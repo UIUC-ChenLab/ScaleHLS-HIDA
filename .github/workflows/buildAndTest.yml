@@ -1,27 +1,36 @@
 name: Build and Test
+
 on: [push, pull_request]
+
 jobs:
   build-scalehls:
     name: Build and Test
     runs-on: ubuntu-latest
+
     steps:
-      - name: Get ScaleHLS
+      # Step 1: Checkout the repository with submodules
+      - name: Checkout repository with submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: recursive  # Ensures all submodules are cloned
 
+      # Step 2: Generate the hash for the LLVM submodule
       - name: Get LLVM Hash
         id: get-llvm-hash
         run: echo "hash=$(git -C ./polygeist rev-parse @:./llvm-project)" >> $GITHUB_OUTPUT
 
-      - name: Determine if rebuild is required
+      # Step 3: Determine if a rebuild of LLVM is required based on commit message
+      - name: Check for 'rebuild llvm' in commit message
         id: determine-rebuild
         run: |
           if git log -1 --pretty=%B | grep -q "rebuild llvm"; then
             echo "force_rebuild=true" >> $GITHUB_OUTPUT
+          else
+            echo "force_rebuild=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Cache LLVM
+      # Step 4: Cache the LLVM build directory
+      - name: Cache LLVM Build
         if: steps.determine-rebuild.outputs.force_rebuild == 'false'
         id: cache-llvm
         uses: actions/cache@v4
@@ -29,6 +38,7 @@ jobs:
           path: polygeist/llvm-project/build
           key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
 
+      # Step 5: Rebuild LLVM if needed
       - name: Rebuild LLVM
         if: steps.determine-rebuild.outputs.force_rebuild == 'true' || steps.cache-llvm.outputs.cache-hit != 'true'
         id: rebuild-llvm
@@ -45,16 +55,17 @@ jobs:
             -DLLVM_EXTERNAL_PROJECTS="polygeist" \
             -DLLVM_EXTERNAL_POLYGEIST_SOURCE_DIR=../../
           cmake --build . -j $(nproc)
-      
-      - name: Update Cache LLVM
+
+      # Step 6: Update LLVM cache after a successful rebuild
+      - name: Update LLVM Cache
         if: steps.rebuild-llvm.outcome == 'success'
         id: update-cache-llvm
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: polygeist/llvm-project/build
           key: ${{ runner.os }}-llvm-${{ steps.get-llvm-hash.outputs.hash }}
 
-
+      # Step 7: Build and test ScaleHLS
       - name: Build and Test ScaleHLS
         run: |
           mkdir -p build
