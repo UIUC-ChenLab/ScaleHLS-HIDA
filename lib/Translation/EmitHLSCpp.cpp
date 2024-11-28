@@ -348,6 +348,9 @@ public:
   void emitSelect(arith::SelectOp op);
   template <typename OpType> void emitConstant(OpType op);
 
+  /// Special operations emitters.
+  template <typename UndefOpType> void emitUndefOp(UndefOpType op);
+
   /// Top-level MLIR module emitter.
   void emitModule(ModuleOp module);
 
@@ -558,6 +561,9 @@ public:
   // bool visitOp(memref::ReinterpretCastOp op) {
   //   return emitter.emitReshape(op), true;
   // }
+
+  /// Special operations.
+  bool visitOp(LLVM::UndefOp op) { return emitter.emitUndefOp(op), true; }
 
 private:
   ModuleEmitter &emitter;
@@ -823,6 +829,16 @@ void ModuleEmitter::emitPrimMul(PrimMulOp op) {
       os << " impl=fabric";
     os << "\n";
   }
+}
+
+template <typename UndefOpType>
+void ModuleEmitter::emitUndefOp(UndefOpType op) {
+  unsigned rank = emitNestedLoopHeader(op.getResult());
+  indent();
+  emitValue(op.getResult(), rank);
+  os << ";";
+  emitInfoAndNewLine(op);
+  emitNestedLoopFooter(rank);
 }
 
 template <typename AssignOpType>

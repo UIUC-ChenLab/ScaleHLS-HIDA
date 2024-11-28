@@ -70,10 +70,12 @@ public:
             // Special expressions.
             arith::SelectOp, arith::ConstantOp, arith::TruncIOp, arith::ExtFOp,
             arith::TruncFOp, arith::ExtUIOp, arith::ExtSIOp, arith::IndexCastOp,
-            arith::UIToFPOp, arith::SIToFPOp, arith::FPToSIOp, arith::FPToUIOp>(
-            [&](auto opNode) -> ResultType {
-              return thisCast->visitOp(opNode, args...);
-            })
+            arith::UIToFPOp, arith::SIToFPOp, arith::FPToSIOp, arith::FPToUIOp,
+
+            // LLVM operations.
+            LLVM::UndefOp>([&](auto opNode) -> ResultType {
+          return thisCast->visitOp(opNode, args...);
+        })
         .Default([&](auto opNode) -> ResultType {
           return thisCast->visitInvalidOp(op, args...);
         });
@@ -211,6 +213,9 @@ public:
   HANDLE(arith::SIToFPOp);
   HANDLE(arith::FPToUIOp);
   HANDLE(arith::FPToSIOp);
+
+  // Special operations.
+  HANDLE(LLVM::UndefOp);
 #undef HANDLE
 };
 }  // namespace scalehls
