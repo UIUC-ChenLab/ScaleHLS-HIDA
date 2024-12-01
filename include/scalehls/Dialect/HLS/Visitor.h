@@ -34,6 +34,7 @@ public:
             // SCF statements.
             scf::ForOp, scf::IfOp, scf::ParallelOp, scf::ReduceOp,
             scf::ReduceReturnOp, scf::YieldOp,
+            scf::WhileOp, scf::ConditionOp,
 
             // Affine statements.
             AffineForOp, AffineIfOp, AffineParallelOp, AffineApplyOp,
@@ -117,6 +118,8 @@ public:
   HANDLE(func::ReturnOp);
 
   // SCF statements.
+  HANDLE(scf::WhileOp);
+  HANDLE(scf::ConditionOp);
   HANDLE(scf::ForOp);
   HANDLE(scf::IfOp);
   HANDLE(scf::ParallelOp);

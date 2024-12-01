@@ -308,6 +308,7 @@ public:
   void emitCall(func::CallOp op);
 
   /// SCF statement emitters.
+  void emitScfWhile(scf::WhileOp op);
   void emitScfFor(scf::ForOp op);
   void emitScfIf(scf::IfOp op);
   void emitScfYield(scf::YieldOp op);
@@ -499,6 +500,8 @@ public:
   bool visitOp(func::ReturnOp op) { return true; }
 
   /// SCF statements.
+  bool visitOp(scf::WhileOp op) { return emitter.emitScfWhile(op), true; };
+  bool visitOp(scf::ConditionOp op) { return true; };
   bool visitOp(scf::ForOp op) { return emitter.emitScfFor(op), true; };
   bool visitOp(scf::IfOp op) { return emitter.emitScfIf(op), true; };
   bool visitOp(scf::ParallelOp op) { return false; };
@@ -923,6 +926,84 @@ void ModuleEmitter::emitCall(func::CallOp op) {
 }
 
 /// SCF statement emitters.
+void ModuleEmitter::emitScfWhile(scf::WhileOp op) {
+  auto iterOperands = op.getBeforeArguments();
+  auto initOperands = op.getInits();
+
+  // Get Condition operation
+  auto &beforeBlock = op.getBefore().front();
+  auto &afterBlock = op.getAfter().front();
+  auto condOp = dyn_cast<scf::ConditionOp>(beforeBlock.getTerminator());
+  if (!condOp) {
+    llvm::errs() << "Condition operation is null!\n";
+    return;
+  }
+
+  // Declare condition variables before the loop
+  auto condArgs = condOp.getArgs();
+  for (unsigned i = 0; i < iterOperands.size(); ++i) {
+    if (!isDeclared(initOperands[i])) {
+      indent();
+      if (initOperands[i].getType().isa<MemRefType>())
+        emitArrayDecl(initOperands[i]);
+      else
+        emitValue(initOperands[i]);
+      os << ";\n";
+    }
+    indent();
+    emitValue(condArgs[i]);
+    os << " = ";
+    emitValue(initOperands[i]);
+    os << ";";
+    emitInfoAndNewLine(op);
+  }
+
+  // Handle mismatch between condition arguments and loop variables
+  if (condArgs.size() > iterOperands.size()) {
+    // Declare and initialize extra condition arguments
+    for (unsigned i = iterOperands.size(); i < condArgs.size(); ++i) {
+      indent();
+      emitValue(condArgs[i]);
+      os << " = ";
+      os << "/* Default value */ 0;";
+      emitInfoAndNewLine(op);
+    }
+  }
+
+  // Emit the while header
+  indent() << "while (";
+  for (unsigned i = 0; i < condArgs.size(); ++i) {
+    if (i > 0)
+      os << " && ";
+
+    // Ensure variables are explicitly converted to boolean if necessary
+    auto condType = condArgs[i].getType();
+    if (condType.isa<IntegerType>()) {
+      os << "(";
+      emitValue(condArgs[i]);
+      os << " != 0)";
+    } else if (condType.isa<FloatType>()) {
+      os << "(";
+      emitValue(condArgs[i]);
+      os << " != 0.0)";
+    } else {
+      emitValue(condArgs[i]);
+    }
+  }
+  os << ") {";
+  emitInfoAndNewLine(op);
+
+  addIndent();
+
+  // Emit the body of the loop
+  emitBlock(beforeBlock);
+  emitBlock(afterBlock);
+
+  reduceIndent();
+
+  indent() << "}\n";
+}
+
 void ModuleEmitter::emitScfFor(scf::ForOp op) {
   indent() << "for (";
   auto iterVar = op.getInductionVar();
@@ -955,6 +1036,14 @@ void ModuleEmitter::emitScfFor(scf::ForOp op) {
     for (unsigned i = 0; i < op.getIterOperands().size(); ++i) {
       auto iterOperand = op.getIterOperands()[i];
       auto iterResult = op.getRegionIterArgs()[i];
+      if (!isDeclared(iterOperand)) {
+        indent();
+        if (iterOperand.getType().isa<MemRefType>())
+          emitArrayDecl(iterOperand);
+        else
+          emitValue(iterOperand);
+        os << ";\n";
+      }
       indent();
       emitValue(iterResult);
       os << " = ";
@@ -1077,6 +1166,29 @@ void ModuleEmitter::emitAffineFor(AffineForOp op) {
   addIndent();
 
   emitLoopDirectives(op);
+
+  // Handle iter_args if present.
+  if (!op.getIterOperands().empty()) {
+    for (unsigned i = 0; i < op.getIterOperands().size(); ++i) {
+      auto iterOperand = op.getIterOperands()[i];
+      auto iterResult = op.getRegionIterArgs()[i];
+      if (!isDeclared(iterOperand)) {
+        indent();
+        if (iterOperand.getType().isa<MemRefType>())
+          emitArrayDecl(iterOperand);
+        else
+          emitValue(iterOperand);
+        os << ";\n";
+      }
+      indent();
+      emitValue(iterResult);
+      os << " = ";
+      emitValue(iterOperand);
+      os << ";";
+      emitInfoAndNewLine(op);
+    }
+  }
+
   emitBlock(*op.getBody());
   reduceIndent();
 
