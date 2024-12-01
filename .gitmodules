@@ -4,4 +4,4 @@
 [submodule "polybench-HLS"]
 	path = polybench-HLS
 	url = git@github.com:sheenisme/polybench_benchmark.git
-	branch = hlsTest
+	branch = main
