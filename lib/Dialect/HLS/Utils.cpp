@@ -510,8 +510,8 @@ LogicalResult scalehls::getEvenlyDistributedFactors(
     // the two-dimension argument "constrFactorsList".
     FactorList constr;
     for (auto &constrFactors : constrFactorsList) {
-      assert(tripCount.value() % constrFactors[loop.index()] == 0 &&
-             "contraint factor isn't divisor of corresponding trip count");
+      if(tripCount.value() % constrFactors[loop.index()] != 0)
+        return failure();
       constr.push_back(constrFactors[loop.index()]);
     }
     constrs.push_back(constr);
