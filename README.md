@@ -53,7 +53,7 @@ $ export PYTHONPATH=$PYTHONPATH:$PWD/build/tools/scalehls/python_packages/scaleh
 ```
 
 ## Compiling PyTorch Model
-Install the pre-built [Torch-MLIR](https://github.com/llvm/torch-mlir) front-end:
+Install the pre-built [Torch-MLIR](https://github.com/llvm/torch-mlir) front-end.
 ```
 $ python -m venv mlir_venv
 $ source mlir_venv/bin/activate
@@ -61,7 +61,7 @@ $ python -m pip install --upgrade pip
 $ pip install --no-deps -r requirements.txt
 ```
 
-Once Torch-MLIR is installed, you should be able to run the following test:
+Once Torch-MLIR is installed, you should be able to run the following test. The tile size and unroll factor can be tuned for higher performance. More options can be found [here](https://github.com/UIUC-ChenLab/ScaleHLS-HIDA/blob/f870247fe66d207df5c6bff6a99b74721742aa24/lib/Transforms/Passes.cpp#L74).
 ```sh
 $ cd samples/pytorch/resnet18
 
