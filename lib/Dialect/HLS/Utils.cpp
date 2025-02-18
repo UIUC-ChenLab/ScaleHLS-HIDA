@@ -510,7 +510,7 @@ LogicalResult scalehls::getEvenlyDistributedFactors(
     // the two-dimension argument "constrFactorsList".
     FactorList constr;
     for (auto &constrFactors : constrFactorsList) {
-      if(tripCount.value() % constrFactors[loop.index()] != 0)
+      if (tripCount.value() % constrFactors[loop.index()] != 0)
         return failure();
       constr.push_back(constrFactors[loop.index()]);
     }
