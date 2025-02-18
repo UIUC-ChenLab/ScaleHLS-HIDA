@@ -58,7 +58,7 @@ Install the pre-built [Torch-MLIR](https://github.com/llvm/torch-mlir) front-end
 $ python -m venv mlir_venv
 $ source mlir_venv/bin/activate
 $ python -m pip install --upgrade pip
-$ pip install --pre torch-mlir torchvision -f https://llvm.github.io/torch-mlir/package-index/ --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+$ pip install --no-deps -r requirements.txt
 ```
 
 Once Torch-MLIR is installed, you should be able to run the following test:
