@@ -240,8 +240,8 @@ struct ParallelizeDataflowNode
         // Rounded parallel factors means that when the correlated node is
         // parallelized, the strided memory access pattern of the current node
         // was not awared. Therefore, we need to revisit the correlated node.
-        if (roundedFlag)
-          worklist.push_back({corrNode, 0});
+        // if (roundedFlag)
+        //   worklist.push_back({corrNode, 0});
 
         // Make sure each factor is larger than the corresponding factor of
         // the external buffer correlatations.
