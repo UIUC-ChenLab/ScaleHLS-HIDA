@@ -1,8 +1,8 @@
 import torch
 import torchvision.models as models
 import torch.nn as nn
-from torch_mlir import fx
 import torch_mlir
+
 from functools import partial
 from typing import Any, Callable, List, Optional, Type, Union
 
@@ -311,27 +311,9 @@ def resnet18(*, weights=None, progress: bool = True, **kwargs: Any) -> ResNet:
 resnet18 = resnet18()
 resnet18.train(False)
 
-# module = torch_mlir.compile(resnet18, torch.ones(
-#     1, 3, 224, 224), output_type=torch_mlir.OutputType.LINALG_ON_TENSORS)
-# print(module)
-# model_name = resnet18.__class__.__name__
-# example_input = torch.ones(1, 3, 224, 224)
-# torch_module = fx.export_and_import(
-#     resnet18, example_input, output_type="linalg-on-tensors", func_name=model_name)
-# print(torch_module)
+module = torch_mlir.compile(resnet18, torch.ones(
+    1, 3, 224, 224), output_type=torch_mlir.OutputType.LINALG_ON_TENSORS)
+print(module)
 
 # traced_script_module = torch.jit.trace(resnet18, torch.ones(1, 3, 224, 224))
 # traced_script_module.save("resnet18.pt")
-
-example_input = torch.ones(1, 3, 224, 224)
-
-
-mlir_module_text = fx.export_and_import(
-    resnet18,
-    example_input,
-    output_type="linalg-on-tensors", 
-    func_name="resnet18"
-)
-
-
-print(mlir_module_text)
