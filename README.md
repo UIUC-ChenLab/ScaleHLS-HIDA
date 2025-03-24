@@ -71,7 +71,7 @@ $ python3 resnet18.py > resnet18.mlir
 $ # Optimize the model and emit C++ code.
 $ scalehls-opt resnet18.mlir \
     -hida-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
-    | scalehls-translate -scalehls-emit-hlscpp > resnet18.cpp
+    | scalehls-translate -scalehls-emit-hlscpp -emit-vitis-directives > resnet18.cpp
 ```
 
 ## Repository Layout
